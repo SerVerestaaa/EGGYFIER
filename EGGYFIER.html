@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>EGGYFIER - Smart Egg Sorting System</title>
+    
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- GSAP for animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    
+    <!-- Chart.js for data visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Particle.js for background effects -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-gradient-to-br from-amber-50 to-orange-100 min-h-screen font-['Poppins']">
+    <!-- Particle.js Background -->
+    <div id="particles-js" class="fixed inset-0 z-0"></div>
+
+    <!-- Theme Toggle -->
+    <button id="themeToggle" class="fixed top-4 left-4 p-2 rounded-full bg-white/80 backdrop-blur-sm shadow-lg z-50 hover:scale-110 transition-transform">
+        <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+        </svg>
+    </button>
+
+    <!-- Main Container -->
+    <div id="app" class="container mx-auto px-4 py-8 relative z-10">
+        <!-- Title Screen Section -->
+        <section id="titleScreen" class="flex flex-col items-center justify-center min-h-screen">
+            <div class="egg-logo mb-8 animate-float">
+                <svg class="w-32 h-32" viewBox="0 0 100 120">
+                    <!-- Egg shape with gradient -->
+                    <defs>
+                        <!-- Main egg gradient -->
+                        <linearGradient id="eggGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#FFFFFF" />
+                            <stop offset="50%" style="stop-color:#FFF3E0" />
+                            <stop offset="100%" style="stop-color:#FFE0B2" />
+                        </linearGradient>
+                        <!-- Shine effect -->
+                        <radialGradient id="shineGradient" cx="35%" cy="25%" r="60%">
+                            <stop offset="0%" style="stop-color:rgba(255,255,255,0.9)" />
+                            <stop offset="70%" style="stop-color:rgba(255,255,255,0)" />
+                        </radialGradient>
+                        <!-- Shadow gradient -->
+                        <linearGradient id="shadowGradient" x1="50%" y1="0%" x2="50%" y2="100%">
+                            <stop offset="0%" style="stop-color:rgba(0,0,0,0)" />
+                            <stop offset="100%" style="stop-color:rgba(0,0,0,0.1)" />
+                        </linearGradient>
+                    </defs>
+                    
+                    <!-- Shadow -->
+                    <ellipse cx="50" cy="110" rx="30" ry="5" fill="rgba(0,0,0,0.15)" filter="blur(3px)" />
+                    
+                    <!-- Main egg shape - more oval -->
+                    <path d="M50,5 
+                            C20,5 5,35 5,65 
+                            C5,95 20,115 50,115 
+                            C80,115 95,95 95,65 
+                            C95,35 80,5 50,5" 
+                          fill="url(#eggGradient)" 
+                          class="egg-shape" />
+                          
+                    <!-- Shine overlay -->
+                    <path d="M50,5 
+                            C20,5 5,35 5,65 
+                            C5,95 20,115 50,115 
+                            C80,115 95,95 95,65 
+                            C95,35 80,5 50,5" 
+                          fill="url(#shineGradient)" />
+                          
+                    <!-- Bottom shadow -->
+                    <path d="M50,5 
+                            C20,5 5,35 5,65 
+                            C5,95 20,115 50,115 
+                            C80,115 95,95 95,65 
+                            C95,35 80,5 50,5" 
+                          fill="url(#shadowGradient)" />
+                          
+                    <!-- Texture lines -->
+                    <path d="M30,45 Q50,42 70,47" stroke="#FFE0B2" stroke-width="0.5" fill="none" opacity="0.5" />
+                    <path d="M25,60 Q50,57 75,62" stroke="#FFE0B2" stroke-width="0.5" fill="none" opacity="0.5" />
+                    <path d="M30,75 Q50,72 70,77" stroke="#FFE0B2" stroke-width="0.5" fill="none" opacity="0.5" />
+                </svg>
+            </div>
+            <h1 class="text-6xl md:text-8xl font-bold text-amber-800 mb-8 text-center animate-title tracking-tight">
+                EGGYFIER
+            </h1>
+            <p class="text-xl md:text-2xl text-amber-700 mb-12 text-center font-light">
+                Smart Egg Sorting System
+            </p>
+            <div class="space-y-4">
+                <button id="startSorting" 
+                        class="w-full sm:w-64 px-8 py-4 bg-amber-600 hover:bg-amber-700 text-white rounded-lg 
+                               transform transition-all hover:scale-105 active:scale-95 shadow-lg
+                               flex items-center justify-center space-x-2">
+                    <span>Start Sorting</span>
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                    </svg>
+                </button>
+                <button id="weeklyLogs" 
+                        class="w-full sm:w-64 px-8 py-4 bg-white hover:bg-amber-50 text-amber-800 rounded-lg 
+                               transform transition-all hover:scale-105 active:scale-95 shadow-lg
+                               flex items-center justify-center space-x-2">
+                    <span>Weekly Logs</span>
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                    </svg>
+                </button>
+                <!-- Settings and Help Buttons Container -->
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-2 sm:space-x-2 w-full sm:w-auto mt-4">
+                    <button id="settingsButton" 
+                            class="w-full sm:w-auto px-4 py-2 bg-white hover:bg-amber-50 text-amber-800 rounded-lg 
+                                   transform transition-all hover:scale-105 active:scale-95 shadow-lg 
+                                   flex items-center justify-center space-x-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                        <span>Settings</span>
+                    </button>
+                    <button id="helpButton" 
+                            class="w-full sm:w-auto px-4 py-2 bg-white hover:bg-amber-50 text-amber-800 rounded-lg 
+                                   transform transition-all hover:scale-105 active:scale-95 shadow-lg 
+                                   flex items-center justify-center space-x-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span>Help</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Processing Screen Section -->
+        <section id="processingScreen" class="hidden flex flex-col items-center justify-center min-h-screen">
+            <div class="bg-white/90 backdrop-blur-sm p-8 rounded-2xl shadow-xl w-full max-w-3xl">
+                <h2 class="text-3xl font-bold text-amber-800 mb-6 text-center flex items-center justify-center">
+                    <svg class="w-8 h-8 mr-2 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                    </svg>
+                    Processing Eggs
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <!-- Balut Counter -->
+                    <div class="bg-gradient-to-br from-amber-50 to-amber-100/50 p-6 rounded-xl shadow-lg transform transition-all hover:scale-105">
+                        <h3 class="text-lg font-semibold text-amber-800 mb-2">Balut</h3>
+                        <p id="balutCount" class="text-3xl font-bold text-amber-600 counter">0</p>
+                        <div class="mt-2 text-sm text-amber-600/70">Eggs processed</div>
+                    </div>
+                    <!-- Penoy Counter -->
+                    <div class="bg-gradient-to-br from-amber-50 to-amber-100/50 p-6 rounded-xl shadow-lg transform transition-all hover:scale-105">
+                        <h3 class="text-lg font-semibold text-amber-800 mb-2">Penoy</h3>
+                        <p id="penoyCount" class="text-3xl font-bold text-amber-600 counter">0</p>
+                        <div class="mt-2 text-sm text-amber-600/70">Eggs processed</div>
+                    </div>
+                    <!-- Wet-Yolk Penoy Counter -->
+                    <div class="bg-gradient-to-br from-amber-50 to-amber-100/50 p-6 rounded-xl shadow-lg transform transition-all hover:scale-105">
+                        <h3 class="text-lg font-semibold text-amber-800 mb-2">Wet-Yolk Penoy</h3>
+                        <p id="wetYolkCount" class="text-3xl font-bold text-amber-600 counter">0</p>
+                        <div class="mt-2 text-sm text-amber-600/70">Eggs processed</div>
+                    </div>
+                </div>
+                <div class="relative w-full bg-amber-100 rounded-full h-4 mb-6 overflow-hidden">
+                    <div id="progressBar" class="absolute top-0 left-0 h-full bg-gradient-to-r from-amber-500 to-amber-600 rounded-full w-0 transition-all duration-300"></div>
+                </div>
+                <div class="flex flex-col items-center space-y-4">
+                    <p id="statusText" class="text-center text-amber-800 font-medium">Initializing...</p>
+                    <div class="flex space-x-4">
+                        <button id="pauseResumeBtn" 
+                                class="min-w-[120px] px-6 py-3 bg-amber-600 hover:bg-amber-700 text-white rounded-lg 
+                                       transform transition-all hover:scale-105 active:scale-95 
+                                       flex items-center justify-center gap-2 font-medium">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 6h2v12H8V6zm6 0h2v12h-2V6z"/>
+                            </svg>
+                            <span>Pause</span>
+                        </button>
+                        <button id="stopBtn" 
+                                class="min-w-[120px] px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg 
+                                       transform transition-all hover:scale-105 active:scale-95 
+                                       flex items-center justify-center gap-2 font-medium">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 6h12v12H6z"/>
+                            </svg>
+                            <span>Stop</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Results Screen Section -->
+        <section id="resultsScreen" class="hidden flex flex-col items-center justify-center min-h-screen">
+            <div class="bg-white/90 backdrop-blur-sm p-8 rounded-2xl shadow-xl w-full max-w-4xl">
+                <h2 class="text-3xl font-bold text-amber-800 mb-6 text-center">Sorting Results</h2>
+                <div class="bg-amber-50/50 p-6 rounded-xl">
+                    <div class="pie-chart-wrapper bg-white/80 rounded-xl">
+                        <canvas id="resultsChart"></canvas>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="text-center p-4 bg-gradient-to-br from-amber-50 to-amber-100/50 rounded-xl shadow-lg">
+                        <h3 class="font-semibold text-amber-800">Total Balut</h3>
+                        <p id="totalBalut" class="text-2xl font-bold text-amber-800">0</p>
+                    </div>
+                    <div class="text-center p-4 bg-gradient-to-br from-amber-50 to-amber-100/50 rounded-xl shadow-lg">
+                        <h3 class="font-semibold text-amber-800">Total Penoy</h3>
+                        <p id="totalPenoy" class="text-2xl font-bold text-amber-800">0</p>
+                    </div>
+                    <div class="text-center p-4 bg-gradient-to-br from-amber-50 to-amber-100/50 rounded-xl shadow-lg">
+                        <h3 class="font-semibold text-amber-800">Total Wet-Yolk Penoy</h3>
+                        <p id="totalWetYolk" class="text-2xl font-bold text-amber-800">0</p>
+                    </div>
+                </div>
+                <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
+                    <button id="backToHome" 
+                            class="w-full sm:w-auto px-6 py-3 bg-amber-600 hover:bg-amber-700 text-white rounded-lg 
+                                   transform transition-all hover:scale-105 active:scale-95 flex items-center justify-center space-x-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                        </svg>
+                        <span>Back to Home</span>
+                    </button>
+                    <button id="saveResults" 
+                            class="w-full sm:w-auto px-6 py-3 bg-white hover:bg-amber-50 text-amber-800 rounded-lg 
+                                   transform transition-all hover:scale-105 active:scale-95 flex items-center justify-center space-x-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/>
+                        </svg>
+                        <span>Save Results</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Weekly Logs Section -->
+        <section id="weeklyLogsScreen" class="hidden flex flex-col items-center justify-center min-h-screen w-full">
+            <div class="bg-white/90 backdrop-blur-sm p-8 rounded-2xl shadow-xl w-full max-w-4xl mx-auto">
+                <h2 class="text-3xl font-bold text-amber-800 mb-6 text-center">Weekly Sorting Logs</h2>
+                
+                <!-- Controls -->
+                <div class="flex flex-col sm:flex-row justify-between items-center mb-6 space-y-4 sm:space-y-0 sm:space-x-4 w-full">
+                    <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
+                        <button id="deleteLastEntry" 
+                                class="w-full sm:w-auto px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg 
+                                       transform transition-all hover:scale-105 active:scale-95 text-sm
+                                       flex items-center justify-center space-x-2 whitespace-nowrap">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                            </svg>
+                            <span>Delete Last Entry</span>
+                        </button>
+                        <button id="clearAllData" 
+                                class="w-full sm:w-auto px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg 
+                                       transform transition-all hover:scale-105 active:scale-95 text-sm
+                                       flex items-center justify-center space-x-2 whitespace-nowrap">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                            </svg>
+                            <span>Clear All Data</span>
+                        </button>
+                    </div>
+                    <div class="flex flex-col space-y-2 sm:space-y-0 w-full">
+                        <div class="flex justify-between items-center w-full">
+                            <button id="prevWeek" class="text-amber-600 hover:text-amber-700 flex items-center space-x-1 whitespace-nowrap">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                                </svg>
+                                <span>Previous Week</span>
+                            </button>
+                            <span id="dateRange" class="hidden sm:inline-block font-semibold text-amber-800 px-4 py-2 bg-amber-50 rounded-lg whitespace-nowrap">June 2 - June 8</span>
+                            <button id="nextWeek" class="text-amber-600 hover:text-amber-700 flex items-center space-x-1 whitespace-nowrap">
+                                <span>Next Week</span>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <span id="dateRange-mobile" class="sm:hidden font-semibold text-amber-800 px-4 py-2 bg-amber-50 rounded-lg whitespace-nowrap text-center">June 2 - June 8</span>
+                    </div>
+                </div>
+
+                <div class="bg-amber-50/50 p-6 rounded-xl mb-6 w-full">
+                    <div class="chart-wrapper">
+                        <canvas id="weeklyChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="overflow-x-auto mb-6 w-full">
+                    <table class="min-w-full bg-transparent rounded-lg overflow-hidden">
+                        <thead>
+                            <tr class="bg-yellow-200/70">
+                                <th class="px-4 py-3 text-center font-semibold text-blue-900 whitespace-nowrap">Date</th>
+                                <th class="px-4 py-3 text-center font-semibold text-blue-900 whitespace-nowrap">Balut</th>
+                                <th class="px-4 py-3 text-center font-semibold text-blue-900 whitespace-nowrap">Penoy</th>
+                                <th class="px-4 py-3 text-center font-semibold text-blue-900 whitespace-nowrap">Wet-Yolk Penoy</th>
+                                <th class="px-4 py-3 text-center font-semibold text-blue-900 whitespace-nowrap">Total</th>
+                                <th class="px-4 py-3 text-center font-semibold text-blue-900 whitespace-nowrap">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="weeklyLogsTable" class="divide-y divide-slate-500">
+                            <!-- Table rows will be dynamically populated -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="flex justify-center space-x-4">
+                    <button id="backToHomeFromLogs" 
+                            class="px-6 py-3 bg-amber-600 hover:bg-amber-700 text-white rounded-lg 
+                                   transform transition-all hover:scale-105 active:scale-95
+                                   flex items-center space-x-2 whitespace-nowrap">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                        </svg>
+                        <span>Back to Home</span>
+                    </button>
+                    <button id="exportData" 
+                            class="px-6 py-3 bg-white hover:bg-amber-50 text-amber-800 rounded-lg 
+                                   transform transition-all hover:scale-105 active:scale-95
+                                   flex items-center space-x-2 whitespace-nowrap">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        <span>Export Data</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center modal-overlay">
+        <div class="bg-white dark:bg-gray-800 rounded-xl p-6 max-w-md w-full mx-4">
+            <h3 class="text-xl font-bold text-amber-800 dark:text-yellow-300 mb-4">Settings</h3>
+            <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <label class="text-gray-700 dark:text-white">Enable Notifications</label>
+                    <button id="toggleNotifications" class="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700">
+                        Enable
+                    </button>
+                </div>
+            </div>
+            <div class="mt-6 flex justify-end">
+                <button class="px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500" onclick="this.closest('.modal-overlay').classList.add('hidden')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Modal -->
+    <div id="helpModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center modal-overlay">
+        <div class="bg-white rounded-xl p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <h3 class="text-2xl font-bold text-amber-800 mb-6">Welcome to EGGYFIER</h3>
+            
+            <div class="space-y-6 text-gray-700">
+                <div>
+                    <h4 class="text-lg font-semibold text-amber-700 mb-2">What is EGGYFIER?</h4>
+                    <p>EGGYFIER is a smart egg sorting system that helps you efficiently categorize and track eggs based on their quality and characteristics. Our system uses advanced technology to ensure accurate and consistent egg sorting.</p>
+                </div>
+
+                <div>
+                    <h4 class="text-lg font-semibold text-amber-700 mb-2">How It Works</h4>
+                    <ol class="list-decimal pl-5 space-y-2">
+                        <li>Click "Start Sorting" to begin a new sorting session</li>
+                        <li>Place eggs on the sorting platform</li>
+                        <li>The system will automatically analyze and categorize each egg</li>
+                        <li>View real-time results and statistics</li>
+                        <li>Export or save your sorting data when finished</li>
+                    </ol>
+                </div>
+
+                <div>
+                    <h4 class="text-lg font-semibold text-amber-700 mb-2">Features</h4>
+                    <ul class="list-disc pl-5 space-y-2">
+                        <li><span class="font-medium">Real-time Sorting:</span> Instant egg classification and categorization</li>
+                        <li><span class="font-medium">Weekly Logs:</span> Track and analyze your sorting history</li>
+                        <li><span class="font-medium">Data Export:</span> Download your sorting data for further analysis</li>
+                        <li><span class="font-medium">Smart Analytics:</span> View detailed statistics and trends</li>
+                        <li><span class="font-medium">Notifications:</span> Get alerts for important events (can be enabled in Settings)</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-lg font-semibold text-amber-700 mb-2">Categories</h4>
+                    <div class="space-y-4">
+                        <div class="p-4 bg-amber-50 rounded-lg">
+                            <h5 class="font-medium text-amber-800 mb-2">Balut (Balot)</h5>
+                            <p class="text-gray-700">A Filipino delicacy and street food favorite, Balut is a fertilized duck egg that has been incubated for about 14-21 days. During this period, the embryo develops inside the egg. The ideal Balut eggs are carefully selected for:</p>
+                            <ul class="list-disc pl-5 mt-2 text-gray-700">
+                                <li>Proper development stage (ideally 16-18 days)</li>
+                                <li>Clear formation of embryo</li>
+                                <li>Good yolk quality</li>
+                                <li>Fresh and clean shell condition</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="p-4 bg-amber-50 rounded-lg">
+                            <h5 class="font-medium text-amber-800 mb-2">Penoy</h5>
+                            <p class="text-gray-700">Another Filipino egg delicacy, Penoy is an unfertilized duck egg that has been incubated but shows no embryo development. It's essentially a hard-boiled duck egg with specific characteristics:</p>
+                            <ul class="list-disc pl-5 mt-2 text-gray-700">
+                                <li>No embryo formation</li>
+                                <li>Firm, solid white (albumen)</li>
+                                <li>Rich, creamy yolk</li>
+                                <li>Often preferred by those who enjoy the taste but not the texture of Balut</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="p-4 bg-amber-50 rounded-lg">
+                            <h5 class="font-medium text-amber-800 mb-2">Wet-Yolk Penoy (Abnoy)</h5>
+                            <p class="text-gray-700">Also known as "Abnoy" in some regions, these are eggs that don't meet the quality standards for either Balut or regular Penoy:</p>
+                            <ul class="list-disc pl-5 mt-2 text-gray-700">
+                                <li>Underdeveloped or improperly developed embryo</li>
+                                <li>Watery or loose yolk consistency</li>
+                                <li>Irregular white formation</li>
+                                <li>Usually separated for quality control purposes</li>
+                            </ul>
+                        </div>
+
+                        <div class="p-4 bg-amber-50 rounded-lg">
+                            <h5 class="font-medium text-amber-800 mb-2">Cultural Significance</h5>
+                            <p class="text-gray-700">These egg products are deeply rooted in Filipino culture:</p>
+                            <ul class="list-disc pl-5 mt-2 text-gray-700">
+                                <li>Popular street food found across the Philippines</li>
+                                <li>Traditional source of protein and nutrition</li>
+                                <li>Important part of local food vendors' livelihoods</li>
+                                <li>Often enjoyed as a snack or with traditional rice wine (pairing with beer is also popular)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="text-lg font-semibold text-amber-700 mb-2">Tips</h4>
+                    <ul class="list-disc pl-5 space-y-2">
+                        <li>Regularly check the Weekly Logs to track your sorting patterns</li>
+                        <li>Export data frequently to maintain backup records</li>
+                        <li>Enable notifications to stay informed about system events</li>
+                        <li>Use the dark/light mode toggle for comfortable viewing</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="mt-6 flex justify-end">
+                <button class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300" onclick="this.closest('.modal-overlay').classList.add('hidden')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom JavaScript -->
+    <script src="js/main.js"></script>
+</body>
+</html> 
